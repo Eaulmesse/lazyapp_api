@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import AuditService from "../services/AuditService";
-import { log } from "console";
+import AuditService from "../services/auditService";
+
 
 
 async function list(req: Request, res: Response) {
-    
     const audits = await AuditService.findAll();
     console.log(audits);
     res.status(200).json(audits);

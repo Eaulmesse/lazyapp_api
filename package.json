@@ -7,9 +7,16 @@
     "start": "node dist/app.js",
     "dev": "tsc && node dist/app.js",
     "watch": "tsc --watch",
-    "dev:watch": "nodemon"
+    "dev:watch": "nodemon",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm migration:generate -- -d ormconfig.ts",
+    "migration:run": "npm run typeorm migration:run -- -d ormconfig.ts",
+    "migration:revert": "npm run typeorm migration:revert -- -d ormconfig.ts",
+    "migration:show": "npm run typeorm migration:show -- -d ormconfig.ts"
+    // npm run migration:generate -- src/migrations/NomDeLaMigration
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
@@ -20,6 +27,7 @@
     "typeorm": "^0.3.25"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.1.0",

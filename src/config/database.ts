@@ -1,13 +1,14 @@
 import { DataSource } from "typeorm";
 import { PORT, MYSQL_URI } from "./index";
 import { Audit } from "../entities/Audit";
+import { User } from "../entities/User";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
   url: MYSQL_URI,
   synchronize: false, // En développement seulement
   logging: true,
-  entities: [Audit],
+  entities: [Audit, User],
   migrations: ["src/migrations/**/*.ts"],
   subscribers: ["src/subscribers/**/*.ts"],
   charset: "utf8mb4",

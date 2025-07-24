@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
-import auditController from "../controllers/AuditController";
+import auditController from "../controllers/auditController";
+
 
 const appRouter = express.Router();
 
