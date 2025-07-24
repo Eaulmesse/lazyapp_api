@@ -2,14 +2,13 @@ import "reflect-metadata";
 import express, { Request, Response } from "express";
 import { PORT, MYSQL_URI } from "./config";
 import { initializeDatabase } from "./config/database";
-import audits from "./routes/Audit";
+import routes from "./routes/index";
 
 const app = express();
 
 // Middleware pour parser le JSON
 app.use(express.json());
-
-app.use("/api/audits", audits);
+app.use("/api", routes);
 
 app.get("/", (request: Request, response: Response) => { 
   console.log("MYSQL_URI: ", MYSQL_URI);

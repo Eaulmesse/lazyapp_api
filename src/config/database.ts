@@ -5,7 +5,7 @@ import { Audit } from "../entities/Audit";
 export const AppDataSource = new DataSource({
   type: "mysql",
   url: MYSQL_URI,
-  synchronize: true, // En développement seulement
+  synchronize: false, // En développement seulement
   logging: true,
   entities: [Audit],
   migrations: ["src/migrations/**/*.ts"],
