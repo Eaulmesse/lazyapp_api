@@ -94,6 +94,64 @@ class UserService {
     async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
         return await bcrypt.compare(password, hashedPassword);
     }
+
+    // Méthode pour générer un token de réinitialisation
+    async generateResetToken(email: string): Promise<string | null> {
+        const user = await this.findByEmail(email);
+        if (!user) {
+            return null; // Ne pas révéler si l'email existe ou non
+        }
+
+        // Générer un token temporaire (valide 1 heure)
+        const resetToken = jwt.sign(
+            { email: user.email, type: 'password_reset' },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        // Optionnel : stocker le token dans la base de données
+        // user.resetToken = resetToken;
+        // user.resetTokenExpires = new Date(Date.now() + 3600000); // 1 heure
+        // await this.userRepository.save(user);
+
+        return resetToken;
+    }
+
+    // Méthode pour valider le token de réinitialisation
+    async validateResetToken(token: string): Promise<User | null> {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET) as any;
+            
+            if (decoded.type !== 'password_reset') {
+                return null;
+            }
+
+            const user = await this.findByEmail(decoded.email);
+            return user;
+        } catch (error) {
+            return null; // Token invalide ou expiré
+        }
+    }
+
+    // Méthode pour réinitialiser le mot de passe
+    async resetPassword(token: string, newPassword: string): Promise<boolean> {
+        const user = await this.validateResetToken(token);
+        if (!user) {
+            return false;
+        }
+
+        try {
+            user.password = await this.hashPassword(newPassword);
+            // Optionnel : nettoyer le token de réinitialisation
+            // user.resetToken = null;
+            // user.resetTokenExpires = null;
+            
+            await this.userRepository.save(user);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }
 
 export default new UserService();
