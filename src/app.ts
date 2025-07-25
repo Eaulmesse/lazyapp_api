@@ -4,7 +4,9 @@ import { PORT, MYSQL_URI } from "./config";
 import { initializeDatabase } from "./config/database";
 import routes from "./routes/index";
 
+
 const app = express();
+
 
 // Middleware pour parser le JSON
 app.use(express.json());

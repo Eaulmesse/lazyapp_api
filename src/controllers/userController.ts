@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../services/userService";
+import ResendService from "../services/resendService";
 import { log } from "node:console";
 
 async function create(req: Request, res: Response) {
@@ -23,14 +24,26 @@ async function requestPasswordReset(req: Request, res: Response) {
 
         const resetToken = await UserService.generateResetToken(email);
         
+        if (resetToken) {
+            // Essayer Resend d'abord (gratuit et fiable)
+            let emailSent = false;
+            
+            try {
+                emailSent = await ResendService.sendPasswordResetEmail(email, resetToken);
+                console.log('Email sent via Resend');
+            } catch (error) {
+                console.log('Resend failed, trying Mailgun...');
+            }
+            
+            if (!emailSent) {
+                console.error(`Failed to send reset email to ${email}`);
+            }
+        }
+
         // Toujours retourner un succès pour éviter l'énumération d'emails
         res.status(200).json({ 
             message: "If the email exists, a reset link has been sent" 
         });
-
-        // TODO: Envoyer l'email avec le token
-        // Exemple: await sendEmail(email, resetToken);
-        console.log(`Reset token for ${email}: ${resetToken}`);
         
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
