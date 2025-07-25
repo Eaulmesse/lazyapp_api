@@ -11,6 +11,7 @@ if (!process.env.PORT) {
 
 export const PORT: number = parseInt(process.env.PORT, 10);
 export const MYSQL_URI: string = process.env.MYSQL_URI as string;
+export const JWT_SECRET: string = process.env.JWT_SECRET as string;
 
 console.log("PORT: ", PORT);
 console.log("MYSQL_URI: ", MYSQL_URI);
