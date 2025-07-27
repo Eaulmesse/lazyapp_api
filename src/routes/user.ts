@@ -5,7 +5,17 @@ const appRouter = express.Router();
 
 console.log("user.ts: User router file loaded."); // Nouveau log
 
-appRouter.post("/", (req: Request, res: Response) => {
+// Route de test GET (protégée)
+appRouter.get("/", (req: Request, res: Response) => {
+    console.log("user.ts: GET / route hit!"); // Nouveau log
+    res.status(200).json({ 
+        message: "User routes are working!",
+        user: req.user,
+        authenticated: true
+    });
+});
+
+appRouter.post("/register", (req: Request, res: Response) => {
     console.log("user.ts: POST / route hit!"); // Nouveau log
     userController.create(req, res);
 });

@@ -4,6 +4,7 @@ import cors from "cors";
 import { PORT } from "./config";
 import { initializeDatabase } from "./config/database";
 import routes from "./routes/index"; // C'est votre routeur principal
+import { authenticateToken } from "./middleware/auth";
 
 const app = express();
 
@@ -11,7 +12,8 @@ app.use(cors());
 app.use(express.json());
 
 console.log("Attempting to mount API routes..."); // Nouveau log
-app.use("/api", routes);
+// Appliquer le middleware d'authentification sur toutes les routes API
+app.use("/api", authenticateToken, routes);
 console.log("API routes mounted successfully (or attempted)."); // Nouveau log
 
 app.get("/", (request: Request, response: Response) => {
