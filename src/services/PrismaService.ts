@@ -26,6 +26,23 @@ class PrismaService {
     });
   }
 
+  async findAllUsers() {
+    return this.prisma.user.findMany();
+  }
+
+  async updateUser(id: number, userData: { email: string; password: string }) {
+    return this.prisma.user.update({
+      where: { id },
+      data: userData,
+    });
+  }
+
+  async deleteUser(id: number) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
+
   async findUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
