@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import AuditService from "../services/auditService";
+import AuditService from "../services/AuditService";
 
 
 
@@ -13,9 +13,8 @@ async function read(req: Request, res: Response) {
     const auditId = req.params.id;
     const audit = await AuditService.findById(auditId);
     if (!audit) {
-        res.status(404).json({ message: "Audit not found" });
+        return res.status(404).json({ message: "Audit not found" });
     }
-    
     
     res.status(200).json(audit);
 }
@@ -29,8 +28,10 @@ async function update(req: Request, res: Response) {
     const auditId = req.params.id;
     const audit = await AuditService.update(auditId, req.body);
     if (!audit) {
-        res.status(404).json({ message: "Audit not found" });
+        return res.status(404).json({ message: "Audit not found" });
     }
+    
+    res.status(200).json(audit);
 }
 
 async function remove(req: Request, res: Response) {

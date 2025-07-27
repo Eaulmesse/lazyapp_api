@@ -1,54 +1,54 @@
-import { Audit } from "../entities/Audit";
-import { Repository } from "typeorm";
-import { AppDataSource } from "../config/database";
-import { log } from "console";
+import PrismaService from "./PrismaService";
 
-class auditService {
-  private auditRepository: Repository<Audit>;
-
-  constructor() {
-    this.auditRepository = AppDataSource.getRepository(Audit);
-  }
-
-  async findAll(): Promise<Audit[]> {
+class AuditService {
+  async findAll() {
     try {
-      return this.auditRepository.find({
-        order: {
-          createdAt: "DESC",
-        },
-      });
-      
+      return await PrismaService.findAllAudits();
     } catch (error) {
       throw new Error("Failed to fetch audits");
     }
   }
 
-  async findById(id: string): Promise<Audit | null> {
+  async findById(id: string) {
     try {
-      return this.auditRepository.findOne({
-        where: { id: parseInt(id) },
-      });
+      return await PrismaService.findAuditById(parseInt(id));
     } catch (error) {
       throw new Error("Failed to fetch audit by ID");
     }
   }
 
-  async create(auditData: Partial<Audit>): Promise<Audit> {
-    try{
-      const newAudit = this.auditRepository.create(auditData);
-      return this.auditRepository.save(newAudit);
+  async create(auditData: {
+    action: string;
+    tableName: string;
+    recordId?: number;
+    oldValues?: any;
+    newValues?: any;
+    userId?: number;
+  }) {
+    try {
+      return await PrismaService.createAudit(auditData);
     } catch (error) {
       throw new Error("Failed to create audit");
     }
   }
 
-  async update(id: string, auditData: Partial<Audit>): Promise<Audit | null> {
+  async update(id: string, auditData: Partial<{
+    action: string;
+    tableName: string;
+    recordId?: number;
+    oldValues?: any;
+    newValues?: any;
+    userId?: number;
+  }>) {
     try {
       const audit = await this.findById(id);
       if (!audit) {
         return null;
       }
-      return this.auditRepository.save({ ...audit, ...auditData });
+      return await PrismaService.client.audit.update({
+        where: { id: parseInt(id) },
+        data: auditData,
+      });
     } catch (error) {
       throw new Error("Failed to update audit");
     }
@@ -61,14 +61,14 @@ class auditService {
         return false;
       }
       
-      const result = await this.auditRepository.delete(parseInt(id));
-      return result.affected !== 0;
+      await PrismaService.client.audit.delete({
+        where: { id: parseInt(id) },
+      });
+      return true;
     } catch (error) {
       throw new Error("Failed to delete audit");
     }
   }
 }
 
-
-
-export default new auditService();
+export default new AuditService();

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import UserService from "../services/userService";
-import ResendService from "../services/resendService";
+import UserService from "../services/UserService";
+import ResendService from "../services/ResendService";
 import { log } from "node:console";
 
 async function create(req: Request, res: Response) {
@@ -104,4 +104,4 @@ export default {
     requestPasswordReset,
     validateResetToken,
     resetPassword,
-}
+} 
