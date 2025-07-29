@@ -1,48 +1,44 @@
-import { Repository } from "typeorm";
-import { AppDataSource } from "../config/database";
-import { User } from "../entities/User";
-import bcrypt  from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
-
-
+import PrismaService from "./PrismaService";
 
 class UserService {
-    private userRepository: Repository<User>;
-
-    constructor() {
-        this.userRepository = AppDataSource.getRepository(User);
-    }
-
-    async create(userData: Partial<User>): Promise<User> {
+    async create(userData: { email: string; password: string }) {
         try {
-
-            
-            
-            const newUser = this.userRepository.create(userData);
-            console.log("HERE");
-            newUser.password = await this.hashPassword(newUser.password);
-            
-            return this.userRepository.save(newUser);
+            const hashedPassword = await this.hashPassword(userData.password);
+            return await PrismaService.createUser({
+                email: userData.email,
+                password: hashedPassword,
+            });
         } catch (error) {
             throw new Error("Failed to create user");
         }
     }
 
-    async findByEmail(email: string): Promise<User | null> {
-        return this.userRepository.findOne({ where: { email } });
+    async findByEmail(email: string) {
+        return await PrismaService.findUserByEmail(email);
     }
 
-    async findById(id: number): Promise<User | null> {
-        return this.userRepository.findOne({ where: { id } });
+    async findById(id: number) {
+        return await PrismaService.findUserById(id);
     }
 
-    async update(id: number, userData: Partial<User>): Promise<User | null> {
+    async update(id: number, userData: Partial<{ email: string; password: string }>) {
         const user = await this.findById(id);
         if (!user) {
             throw new Error("User not found");
         }
-        return this.userRepository.save({ ...user, ...userData });
+        
+        const updateData: any = { ...userData };
+        if (userData.password) {
+            updateData.password = await this.hashPassword(userData.password);
+        }
+        
+        return await PrismaService.client.user.update({
+            where: { id },
+            data: updateData,
+        });
     }
 
     async delete(id: number): Promise<void> {
@@ -50,14 +46,14 @@ class UserService {
         if (!user) {
             throw new Error("User not found");
         }
-        await this.userRepository.delete(id);
+        await PrismaService.client.user.delete({ where: { id } });
     }
 
-    async findAll(): Promise<User[]> {
-        return this.userRepository.find();
+    async findAll() {
+        return await PrismaService.client.user.findMany();
     }
 
-    async login(userData: Partial<User>): Promise<string | null> {
+    async login(userData: { email: string; password: string }): Promise<string | null> {
         if (!userData.email || !userData.password) {
             throw new Error("Email and password are required");
         }
@@ -76,7 +72,7 @@ class UserService {
         return token;
     }
 
-    async createToken(user: User): Promise<string> {
+    async createToken(user: { id: number; email: string }): Promise<string> {
         const payload = {
             id: user.id,
             email: user.email
@@ -87,7 +83,6 @@ class UserService {
     async hashPassword(password: string): Promise<string> {
         const saltRound = 10;
         const salt = await bcrypt.genSalt(saltRound);
-
         return await bcrypt.hash(password, 10);
     }
 
@@ -109,16 +104,11 @@ class UserService {
             { expiresIn: '1h' }
         );
 
-        // Optionnel : stocker le token dans la base de données
-        // user.resetToken = resetToken;
-        // user.resetTokenExpires = new Date(Date.now() + 3600000); // 1 heure
-        // await this.userRepository.save(user);
-
         return resetToken;
     }
 
     // Méthode pour valider le token de réinitialisation
-    async validateResetToken(token: string): Promise<User | null> {
+    async validateResetToken(token: string) {
         try {
             const decoded = jwt.verify(token, JWT_SECRET) as any;
             
@@ -141,12 +131,11 @@ class UserService {
         }
 
         try {
-            user.password = await this.hashPassword(newPassword);
-            // Optionnel : nettoyer le token de réinitialisation
-            // user.resetToken = null;
-            // user.resetTokenExpires = null;
-            
-            await this.userRepository.save(user);
+            const hashedPassword = await this.hashPassword(newPassword);
+            await PrismaService.client.user.update({
+                where: { id: user.id },
+                data: { password: hashedPassword },
+            });
             return true;
         } catch (error) {
             return false;
@@ -154,4 +143,4 @@ class UserService {
     }
 }
 
-export default new UserService();
+export default new UserService(); 

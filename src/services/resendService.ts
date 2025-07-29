@@ -1,17 +1,23 @@
 import { Resend } from 'resend';
 
 class ResendService {
-    private resend: Resend;
+    private resend: Resend | null = null;
 
     constructor() {
         const apiKey = process.env.RESEND_API_KEY;
-        if (!apiKey) {
-            throw new Error('RESEND_API_KEY is not defined');
+        if (apiKey) {
+            this.resend = new Resend(apiKey);
+        } else {
+            console.warn('⚠️ RESEND_API_KEY not defined - Resend service will be disabled');
         }
-        this.resend = new Resend(apiKey);
     }
 
     async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+        if (!this.resend) {
+            console.warn('Resend service not available - skipping email send');
+            return false;
+        }
+        
         try {
             const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
             
@@ -75,6 +81,11 @@ class ResendService {
     }
 
     async testConnection(): Promise<boolean> {
+        if (!this.resend) {
+            console.warn('Resend service not available');
+            return false;
+        }
+        
         try {
             const { data, error } = await this.resend.emails.send({
                 from: process.env.FROM_EMAIL || 'noreply@votreapp.com',

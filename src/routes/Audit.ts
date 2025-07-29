@@ -1,33 +1,35 @@
-import express, { Request, Response, Router } from "express";
-import auditController from "../controllers/auditController";
+// Dans votre fichier audit.ts (ou auditController.ts si le log est dans le controller)
+import express, { Request, Response } from "express";
+import auditController from "../controllers/AuditController"; // Assurez-vous que le chemin est correct
 
+const auditRouter = express.Router(); // Ou whatever your router variable is named
 
-const appRouter = express.Router();
+console.log("audit.ts: Audit router file loaded."); // Nouveau log au début du fichier
 
-
-// Tous les artistes
-appRouter.get("/", (req: Request, res: Response) => {
+// Tous les audits
+auditRouter.get("/", (req: Request, res: Response) => {
+  console.log("audit.ts: GET / route hit!"); // Nouveau log à l'intérieur de la route
   auditController.list(req, res);
 });
 
-// Détails d'un artiste
-appRouter.get("/:id", (req: Request, res: Response) => {
+// Détails d'un audit
+auditRouter.get("/:id", (req: Request, res: Response) => {
   auditController.read(req, res);
 });
 
-// Créer un artiste
-appRouter.post("/", (req: Request, res: Response) => {
+// Créer un audit
+auditRouter.post("/", (req: Request, res: Response) => {
   auditController.create(req, res);
 });
 
-// Modifier un artiste
-appRouter.put("/:id", (req: Request, res: Response) => {
+// Modifier un audit
+auditRouter.put("/:id", (req: Request, res: Response) => {
   auditController.update(req, res);
 });
 
-// Supprimer un artiste
-appRouter.delete("/:id", (req: Request, res: Response) => {
+// Supprimer un audit
+auditRouter.delete("/:id", (req: Request, res: Response) => {
   auditController.remove(req, res);
 });
 
-export default appRouter;
+export default auditRouter; 

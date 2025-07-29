@@ -1,9 +1,22 @@
 import express, { Request, Response, Router } from "express";
-import userController from "../controllers/userController";
+import userController from "../controllers/UserController";
 
 const appRouter = express.Router();
 
-appRouter.post("/", (req: Request, res: Response) => {
+console.log("user.ts: User router file loaded."); // Nouveau log
+
+// Route de test GET (protégée)
+appRouter.get("/", (req: Request, res: Response) => {
+    console.log("user.ts: GET / route hit!"); // Nouveau log
+    res.status(200).json({ 
+        message: "User routes are working!",
+        user: req.user,
+        authenticated: true
+    });
+});
+
+appRouter.post("/register", (req: Request, res: Response) => {
+    console.log("user.ts: POST / route hit!"); // Nouveau log
     userController.create(req, res);
 });
 
@@ -29,7 +42,7 @@ appRouter.get("/test-resend", async (req: Request, res: Response) => {
     try {
         
         
-        const ResendService = require("../services/resendService").default;
+        const ResendService = require("../services/ResendService").default;
         const success = await ResendService.testConnection();
         
         if (success) {
