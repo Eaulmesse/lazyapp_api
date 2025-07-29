@@ -24,4 +24,5 @@ try {
     console.error("routes/index.ts: Error loading user routes:", error);
 }
 
+
 export default appRouter;

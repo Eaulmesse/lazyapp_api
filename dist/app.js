@@ -18,11 +18,15 @@ const cors_1 = __importDefault(require("cors"));
 const config_1 = require("./config");
 const database_1 = require("./config/database");
 const index_1 = __importDefault(require("./routes/index")); // C'est votre routeur principal
+const auth_1 = require("./middleware/auth");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
-app.use(express_1.default.json());
+// Augmenter la limite de taille pour les payloads Lighthouse
+app.use(express_1.default.json({ limit: '50mb' }));
+app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
 console.log("Attempting to mount API routes..."); // Nouveau log
-app.use("/api", index_1.default);
+// Appliquer le middleware d'authentification sur toutes les routes API
+app.use("/api", auth_1.authenticateToken, index_1.default);
 console.log("API routes mounted successfully (or attempted)."); // Nouveau log
 app.get("/", (request, response) => {
     response.status(200).send("Hello World");

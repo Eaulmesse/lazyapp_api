@@ -12,22 +12,22 @@ auditRouter.get("/", (req: Request, res: Response) => {
   auditController.list(req, res);
 });
 
-// Détails d'un artiste
+// Détails d'un audit
 auditRouter.get("/:id", (req: Request, res: Response) => {
   auditController.read(req, res);
 });
 
-// Créer un artiste
+// Créer un audit
 auditRouter.post("/", (req: Request, res: Response) => {
   auditController.create(req, res);
 });
 
-// Modifier un artiste
+// Modifier un audit
 auditRouter.put("/:id", (req: Request, res: Response) => {
   auditController.update(req, res);
 });
 
-// Supprimer un artiste
+// Supprimer un audit
 auditRouter.delete("/:id", (req: Request, res: Response) => {
   auditController.remove(req, res);
 });

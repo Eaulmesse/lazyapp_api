@@ -64,20 +64,50 @@ class PrismaService {
     newValues?: any;
     userId?: number;
   }) {
-    return this.prisma.audit.create({
-      data: auditData,
-    });
+    try {
+      await this.prisma.$connect();
+      return await this.prisma.audit.create({
+        data: auditData,
+      });
+    } catch (error) {
+      console.error('Error in createAudit:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to create audit: ${errorMessage}`);
+    }
   }
 
   async findAllAudits() {
-    return this.prisma.audit.findMany({
-      include: {
-        user: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    try {
+      // S'assurer que la connexion est établie
+      await this.prisma.$connect();
+      
+      return await this.prisma.audit.findMany({
+        select: {
+          id: true,
+          action: true,
+          tableName: true,
+          recordId: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              id: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          id: 'desc', // Utiliser l'ID au lieu de createdAt pour éviter le tri complexe
+        },
+        take: 50, // Réduire encore plus
+        skip: 0,
+      });
+    } catch (error) {
+      console.error('Error in findAllAudits:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to fetch audits: ${errorMessage}`);
+    }
   }
 
   async findAuditById(id: number) {
@@ -87,6 +117,36 @@ class PrismaService {
         user: true,
       },
     });
+  }
+
+  // Méthode spécifique pour les audits Lighthouse (temporairement désactivée)
+  async findLighthouseAudits() {
+    try {
+      await this.prisma.$connect();
+      
+      return await this.prisma.audit.findMany({
+        select: {
+          id: true,
+          action: true,
+          tableName: true,
+          createdAt: true,
+          user: {
+            select: {
+              id: true,
+              email: true
+            }
+          }
+        },
+        orderBy: {
+          id: 'desc',
+        },
+        take: 20,
+      });
+    } catch (error) {
+      console.error('Error in findLighthouseAudits:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to fetch lighthouse audits: ${errorMessage}`);
+    }
   }
 }
 

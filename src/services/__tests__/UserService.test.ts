@@ -1,5 +1,7 @@
 import UserService from "../UserService";
 import PrismaService from "../PrismaService";
+import { jest } from "@jest/globals";
+import { describe, it, beforeEach, expect } from "@jest/globals";
 
 jest.mock("../UserService");
 
@@ -184,7 +186,6 @@ describe("UserService", () => {
             await expect(UserService.login({ email: "test@test.com", password: "" })).rejects.toThrow("Email and password are required");
         });
     });
-
     
 
 

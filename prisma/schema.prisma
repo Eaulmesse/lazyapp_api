@@ -35,6 +35,35 @@ model Audit {
   oldValues   Json?
   newValues   Json?
   userId      Int?
+  
+  // Champs pour les résultats Lighthouse
+  testId      String?  @unique
+  url         String?
+  timestamp   DateTime?
+  userAgent   String?
+  deviceType  String?  // 'desktop' ou 'mobile'
+  
+  // Scores Lighthouse
+  scorePerformance      Float?
+  scoreAccessibility    Float?
+  scoreBestPractices    Float?
+  scoreSEO              Float?
+  scorePWA              Float?
+  
+  // Métriques de performance
+  firstContentfulPaint  Float?
+  largestContentfulPaint Float?
+  cumulativeLayoutShift Float?
+  speedIndex            Float?
+  totalBlockingTime     Float?
+  timeToInteractive     Float?
+  
+  // Données supplémentaires
+  opportunities         Json?
+  diagnostics           Json?
+  recommendationsIA     Json?
+  rawLighthouseReport   Json?
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -43,3 +72,5 @@ model Audit {
 
   @@map("audits")
 }
+
+

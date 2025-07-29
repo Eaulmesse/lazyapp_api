@@ -6,10 +6,13 @@ import { initializeDatabase } from "./config/database";
 import routes from "./routes/index"; // C'est votre routeur principal
 import { authenticateToken } from "./middleware/auth";
 
+
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+// Augmenter la limite de taille pour les payloads Lighthouse
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 console.log("Attempting to mount API routes..."); // Nouveau log
 // Appliquer le middleware d'authentification sur toutes les routes API

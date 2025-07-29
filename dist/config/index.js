@@ -11,7 +11,7 @@ if (!process.env.PORT) {
     throw new Error("PORT is not defined in the environment variables");
     process.exit(1);
 }
-exports.PORT = parseInt(process.env.PORT, 10);
+exports.PORT = parseInt(process.env.PORT, 10) || 3000;
 exports.JWT_SECRET = process.env.JWT_SECRET;
 // Configuration Resend (optionnel)
 exports.RESEND_API_KEY = process.env.RESEND_API_KEY_;

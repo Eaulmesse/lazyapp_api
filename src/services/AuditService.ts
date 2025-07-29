@@ -17,6 +17,14 @@ class AuditService {
     }
   }
 
+  async findLighthouseAudits() {
+    try {
+      return await PrismaService.findLighthouseAudits();
+    } catch (error) {
+      throw new Error("Failed to fetch lighthouse audits");
+    }
+  }
+
   async create(auditData: {
     action: string;
     tableName: string;
@@ -24,8 +32,35 @@ class AuditService {
     oldValues?: any;
     newValues?: any;
     userId?: number;
+    // Champs pour Lighthouse
+    testId?: string;
+    url?: string;
+    timestamp?: Date;
+    scorePerformance?: number;
+    scoreAccessibility?: number;
+    scoreBestPractices?: number;
+    scoreSEO?: number;
+    scorePWA?: number;
+    firstContentfulPaint?: number;
+    largestContentfulPaint?: number;
+    cumulativeLayoutShift?: number;
+    speedIndex?: number;
+    totalBlockingTime?: number;
+    timeToInteractive?: number;
+    opportunities?: any;
+    diagnostics?: any;
+    recommendationsIA?: any;
+    rawLighthouseReport?: any;
   }) {
     try {
+      // Si c'est un résultat Lighthouse, utiliser le client Prisma directement
+      if (auditData.testId && auditData.url) {
+        return await PrismaService.client.audit.create({
+          data: auditData
+        });
+      }
+      
+      // Sinon, utiliser la méthode existante pour les audits normaux
       return await PrismaService.createAudit(auditData);
     } catch (error) {
       throw new Error("Failed to create audit");
