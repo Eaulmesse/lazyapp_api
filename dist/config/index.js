@@ -7,14 +7,11 @@ exports.FROM_EMAIL = exports.RESEND_DOMAIN = exports.RESEND_API_KEY = exports.JW
 const dotenv_1 = __importDefault(require("dotenv"));
 // Charger les variables d'environnement
 dotenv_1.default.config();
-if (!process.env.PORT) {
-    throw new Error("PORT is not defined in the environment variables");
-    process.exit(1);
+exports.PORT = parseInt(process.env.PORT || '3000', 10);
+exports.JWT_SECRET = process.env.JWT_SECRET || 'default-jwt-secret';
+exports.RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+exports.RESEND_DOMAIN = process.env.RESEND_DOMAIN || '';
+exports.FROM_EMAIL = process.env.FROM_EMAIL || '';
+if (process.env.NODE_ENV !== 'test') {
+    console.log("PORT: ", exports.PORT);
 }
-exports.PORT = parseInt(process.env.PORT, 10) || 3000;
-exports.JWT_SECRET = process.env.JWT_SECRET;
-// Configuration Resend (optionnel)
-exports.RESEND_API_KEY = process.env.RESEND_API_KEY_;
-exports.RESEND_DOMAIN = process.env.RESEND__DOMAIN;
-exports.FROM_EMAIL = process.env.FROM_EMAIL;
-console.log("PORT: ", exports.PORT);

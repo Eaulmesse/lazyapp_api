@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p src/tsconfig.json",
     "start": "node dist/app.js",
     "dev": "tsc && node dist/app.js",
     "watch": "tsc --watch",
