@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
-import userController from "../controllers/UserController";
+import UserController from "../controllers/UserController";
+import ResendService from "../services/ResendService";
 
 const appRouter = express.Router();
 
@@ -17,32 +18,29 @@ appRouter.get("/", (req: Request, res: Response) => {
 
 appRouter.post("/register", (req: Request, res: Response) => {
     console.log("user.ts: POST / route hit!"); // Nouveau log
-    userController.create(req, res);
+    UserController.create(req, res);
 });
 
 appRouter.post("/login", (req: Request, res: Response) => {
-    userController.login(req, res);
+    UserController.login(req, res);
 });
 
 // Routes pour la récupération de mot de passe
 appRouter.post("/forgot-password", (req: Request, res: Response) => {
-    userController.requestPasswordReset(req, res);
+    UserController.requestPasswordReset(req, res);
 });
 
 appRouter.post("/validate-reset-token", (req: Request, res: Response) => {
-    userController.validateResetToken(req, res);
+    UserController.validateResetToken(req, res);
 });
 
 appRouter.post("/reset-password", (req: Request, res: Response) => {
-    userController.resetPassword(req, res);
+    UserController.resetPassword(req, res);
 });
 
 // Route de test pour Mailgun (à supprimer en production)
 appRouter.get("/test-resend", async (req: Request, res: Response) => {
     try {
-        
-        
-        const ResendService = require("../services/ResendService").default;
         const success = await ResendService.testConnection();
         
         if (success) {
