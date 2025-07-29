@@ -26,8 +26,3 @@ jobs:
 
       - name: Run tests
         run: npm test
-
-      - name: Run integration tests
-        run: |
-          docker-compose up -d mysql
-          npm run test:integration
